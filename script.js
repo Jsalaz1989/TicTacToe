@@ -1,15 +1,6 @@
 function Square(props) {  
-  
   return (
     <button className="square" onClick={props.onClick} style={props.style}>
-      {props.value}
-    </button>
-  );
-}
-
-function Toggle(props) {
-  return (
-    <button onClick={props.onClick}>
       {props.value}
     </button>
   );
@@ -19,12 +10,10 @@ class Board extends React.Component {
   renderSquare(i) {
     
     // When someone wins, highlight the three squares that caused the win
-    const winner = this.props.winner;    
     let squareStyle = null;
-    if (this.props.winner) {
-      squareStyle = winner.winningSquares.includes(i) ? 
-        {backgroundColor: '#ccc'} : {backgroundColor: '#fff'};
-    }
+    if (this.props.winner)
+      squareStyle = this.props.winner.winningSquares.includes(i) ? {backgroundColor: '#ccc'} : {backgroundColor: '#fff'};
+    
   
     return (
       <Square
@@ -138,8 +127,13 @@ class Game extends React.Component {
     if (winner) 
       status = 'Winner: ' + winner.winner;
     else
-      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');   
-    
+    {
+      // When no one wins, display a message about the result being a draw
+      if (winner == false)
+        status = 'Draw';   
+      else
+        status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');   
+    }
     return (
       <div className="game">
         <div className="game-board">
@@ -153,10 +147,9 @@ class Game extends React.Component {
         <div className="game-info">
           <div>{status}</div>
           {/* Add a toggle button that lets you sort the moves in either ascending or descending orderA JSX */}
-          <Toggle 
-            value={this.state.ascending ? "Sort by descending order" : "Sort by ascending order"}     
-            onClick={() => this.setState({ascending: !this.state.ascending})}
-          />
+          <button onClick={() => this.setState({ascending: !this.state.ascending})}>
+            {this.state.ascending ? "Sort by descending order" : "Sort by ascending order"}
+          </button>
           <ol>{this.state.ascending ? moves : moves.reverse()}</ol>
         </div>
       </div>
@@ -197,8 +190,16 @@ function calculateWinner(squares) {
       };    
     }
   }
-  return null;
+  
+  // When no one wins, display a message about the result being a draw
+  let win = false;    
+  for (let i = 0; i < squares.length; i++) {
+    if (squares[i] == null)
+    {
+      win = null;
+      break;
+    }
+  }  
+  
+  return win;  
 }
-
-// TODO:
-// When no one wins, display a message about the result being a draw.
